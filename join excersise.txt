@@ -1,4 +1,6 @@
-1. write query to take all records from below tables in seperate query and export result as excel patient
+sql language
+
+. write query to take all records from below tables in seperate query and export result as excel patient
 doctor
 medicine
 scheduling
