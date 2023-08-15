@@ -1,0 +1,171 @@
+1. write query to take all records from below tables in seperate query and export result as excel patient
+doctor
+medicine
+scheduling
+ord_med
+billing 
+2. write a query to get patient from krishnagiri
+3. write a query to find the current age of all patient
+4. write a query to get the patient record if age is less than 30 
+5. write a query to find the Cardiologist doctor details 
+6. write a query to get the medicine name for acid reflux 
+7. write a query to find the medicine list if cost between 2000 to 5000
+8. write a query to find the patient details who got appoinment in Bangalore
+9. write a query to find the patient who got treatement from ENT doctor.
+10. write query to find the doctor details who gave treatment to patient Nithish.
+11. Write a query to display all patient appoinmentdetails and corresponding dcotor & medicine details 
+12. write q query to find the maximum bill paid patient and treatement doctor , prescriped medicine.
+-----------------------------------------------------------
+1. write query to take all records from below tables in seperate query and export result as excel patient
+  
+SELECT * FROM doctor;
+SELECT * FROM medicine;
+SELECT * FROM scheduling;
+SELECT * FROM ord_med;
+SELECT * FROM billing;
+-------------------------------------------------1
+2. write a query to get patient from krishnagiri.
+
+SELECT *
+FROM PATIENT
+WHERE ADDRESS='Krishnagiri';
+--------------------------------------------------2
+3. write a query to find the current age of all patient.
+
+SELECT *
+FROM PATIENT;
+
+--------------------------------------------------3
+4. write a query to get the patient record if age is less than 30.
+
+SELECT *
+FROM PATIENT
+WHERE AGE < 30;
+
+----------------------------------------------------4
+5. write a query to find the Cardiologist doctor details 
+
+SELECT *
+FROM DOCTOR
+WHERE SPECILIAZATION='Cardiologist';
+----------------------------------------------------5
+6. write a query to get the medicine name for acid reflux.
+
+SELECT *
+FROM MEDICINE
+WHERE INFORMATION LIKE '%acid reflux%';
+---------------------------------------------------6
+7. write a query to find the medicine list if cost between 2000 to 5000.
+
+SELECT *
+FROM MEDICINE
+WHERE COST BETWEEN 2000 AND 5000;
+---------------------------------------------------7
+8.write a query to find the patient details who got appoinment in Bangalore.
+
+SELECT * FROM PATIENT;
+SELECT * FROM scheduling;
+
+SELECT A.*,B.APPT_LOCATION
+FROM PATIENT A INNER JOIN scheduling B
+ON A.P_ID=B.P_ID
+AND B.APPT_LOCATION='Bangalore';
+-------------------------------------------------8
+9. write a query to find the patient who got treatement from ENT doctor.
+
+SELECT * FROM PATIENT;
+SELECT * FROM scheduling;
+SELECT * FROM DOCTOR;
+
+SELECT A.P_ID,A.NAME,A.AGE,C.NAME,C.SPECILIAZATION
+FROM PATIENT A INNER JOIN scheduling B
+ON A.P_ID=B.P_ID
+INNER JOIN DOCTOR C
+ON B.D_ID=C.D_ID
+AND C.SPECILIAZATION='ENT';
+-------------------------------------------------9
+10.write query to find the doctor details who gave treatment to patient Nithish.
+
+SELECT * FROM PATIENT;
+SELECT * FROM DOCTOR;
+SELECT * FROM scheduling;
+
+SELECT A.P_ID,A.NAME,A.AGE,C.D_ID,C.NAME,C.SPECILIAZATION
+FROM PATIENT A INNER JOIN scheduling B
+ON A.P_ID=B.P_ID
+INNER JOIN DOCTOR C 
+ON B.D_ID=C.D_ID
+AND A.NAME='Nithish';
+---------------------------------------------10
+11. Write a query to display all patient appoinment details
+    and corresponding dcotor & medicine details.
+    
+SELECT * FROM PATIENT;
+SELECT * FROM DOCTOR;
+SELECT * FROM scheduling;
+select * from ord_med;
+select * from medicine;
+
+select a.P_ID,a.name,b.SCH_ID,b.APPT_TIME,b.APPT_DATE,b.APPT_LOCATION,
+       c.D_ID,c.NAME,c.SPECILIAZATION,e.*
+from patient a inner join scheduling b
+on a.P_ID=b.P_ID
+inner join doctor c
+on b.d_id=c.d_id
+inner join ord_med d
+on c.D_ID=d.D_ID
+inner join medicine e
+on d.MED_ID=e.M_ID;
+--------------------------------------------------11
+12.write a query to find the maximum bill paid patient
+  and treatement doctor , prescriped medicine.
+
+select * from patient;
+select * from billing;
+select * from medicine;
+select * from doctor;
+SELECT * FROM scheduling;
+select * from ord_med;
+
+select *
+from
+(select rn.*,
+dense_rank() over(order by amount desc) rnmax 
+from (select a.P_ID,a.NAME,a.AGE,
+       f.COST amount,
+       c.NAME as doc_name,
+       e.NAME as med_name 
+from patient a inner join scheduling b
+on a.p_id=b.p_id
+     inner join doctor c
+on b.d_id=c.d_id
+     inner join ord_med d
+on c.d_id=d.d_id
+     inner join medicine e
+on d.MED_ID=e.M_ID
+     inner join billing f
+on a.p_id=f.p_id)rn
+)x
+where x.RNMAX=1;---1st met
+
+select inl.*
+from(
+select b.*,
+     dense_rank() over(order by COST desc) as rn
+from billing b
+)inl 
+where inl.rn=1;------2nd meth
+
+select b.*,p.*,s.*,d.*
+from billing b,
+     patient p,
+     scheduling s,
+     doctor d
+where cost in (
+select max(COST)
+from billing)
+and b.p_id=p.p_id
+and p.p_id=s.p_id
+and s.d_id=d.d_id;------3rd meth
+
+---------------------------------
