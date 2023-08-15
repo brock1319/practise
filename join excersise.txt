@@ -1,5 +1,7 @@
 sql language
 
+joining excersie important
+
 . write query to take all records from below tables in seperate query and export result as excel patient
 doctor
 medicine
